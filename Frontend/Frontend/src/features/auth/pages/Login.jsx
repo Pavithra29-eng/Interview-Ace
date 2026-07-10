@@ -69,10 +69,10 @@ const Login = () => {
                     <button type="submit" className='button primary-button'>Login</button>
                 </form>
 
-                {/* ESSENTIAL UPDATE: Direct link route mapping to initiate Passport OAuth flow */}
+                {/* ESSENTIAL UPDATE: Dynamic route mapping to initiate Passport OAuth flow */}
                 <div style={{ marginTop: '1rem', marginBottom: '1rem', textAlign: 'center' }}>
                     <a
-                        href="http://localhost:3000/api/auth/google"
+                        href={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/auth/google`}
                         className="button secondary-button"
                         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', textDecoration: 'none' }}
                     >

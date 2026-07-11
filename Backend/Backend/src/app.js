@@ -25,21 +25,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// 4. Session & Passport Middleware Stack
+// 4. Session & Passport Middleware Stack (Moved here for correct ordering!)
 app.use(session({
     secret: process.env.SESSION_SECRET || 'interview_ace_secret_key',
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: true, // Crucial for production HTTPS cross-site cookies
-        sameSite: 'none' // Required for cross-domain cookies between Vercel and Render
+        secure: true,
+        sameSite: 'none'
     }
 }));
 app.use(passport.initialize());
 app.use(passport.session());
 
-// 5. Application Feature Routes 
-// (Google OAuth routes are cleanly handled inside authRouter now)
+// 5. Application Feature Routes
 const authRouter = require("./routes/auth.routes");
 const interviewRouter = require("./routes/interview.routes");
 

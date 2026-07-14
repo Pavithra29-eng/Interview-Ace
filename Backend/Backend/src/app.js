@@ -2,10 +2,6 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const session = require("express-session");
-const passport = require("passport");
-
-// Initialize passport strategy configuration
-require("./config/passport");
 
 const app = express();
 
@@ -25,9 +21,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// 4. Session & Passport Middleware Stack (Moved here for correct ordering!)
+// 4. Session Middleware Stack
 app.use(session({
-    // Modified: Changed old 'interview_ace_secret_key' to 'preppulse_secret_key'
     secret: process.env.SESSION_SECRET || 'preppulse_secret_key',
     resave: false,
     saveUninitialized: false,
@@ -36,14 +31,9 @@ app.use(session({
         sameSite: 'none'
     }
 }));
-app.use(passport.initialize());
-app.use(passport.session());
 
-// 5. Application Feature Routes
-const authRouter = require("./routes/auth.routes");
+// 5. Application Feature Routes (Removed auth routes entirely)
 const interviewRouter = require("./routes/interview.routes");
-
-app.use("/api/auth", authRouter);
 app.use("/api/interview", interviewRouter);
 
 // 6. 404 handler for unmatched routes

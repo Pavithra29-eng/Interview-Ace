@@ -8,19 +8,7 @@ const app = express();
 // 1. Trust Proxy (Must be first for Render deployments)
 app.set("trust proxy", 1);
 
-// 2. Comprehensive CORS Middleware Handling
-app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "https://preppulse-mu.vercel.app");
-    res.header("Access-Control-Allow-Credentials", "true");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-    if (req.method === "OPTIONS") {
-        return res.sendStatus(200);
-    }
-    next();
-});
-
+// 2. Global CORS Package Settings
 app.use(cors({
     origin: "https://preppulse-mu.vercel.app",
     credentials: true,
@@ -44,18 +32,25 @@ app.use(session({
     }
 }));
 
-// 5. Application Feature Routes
+// 5. Intercept Dead Auth Routes Safely to Avoid 404 Header Wipes
+app.get("/api/auth/get-me", (req, res) => {
+    res.header("Access-Control-Allow-Origin", "https://preppulse-mu.vercel.app");
+    res.header("Access-Control-Allow-Credentials", "true");
+    return res.status(200).json({ user: { id: "guest", username: "Guest User" } });
+});
+
+// 6. Application Feature Routes
 const interviewRouter = require("./routes/interview.routes");
 app.use("/api/interview", interviewRouter);
 
-// 6. 404 handler for unmatched routes (Appends CORS headers explicitly)
+// 7. 404 handler for unmatched routes
 app.use((req, res) => {
     res.header("Access-Control-Allow-Origin", "https://preppulse-mu.vercel.app");
     res.header("Access-Control-Allow-Credentials", "true");
     res.status(404).json({ message: "Route not found" });
 });
 
-// 7. Centralized error handler (Appends CORS headers explicitly)
+// 8. Centralized error handler
 app.use((err, req, res, next) => {
     console.error("Unhandled error:", err);
     res.header("Access-Control-Allow-Origin", "https://preppulse-mu.vercel.app");

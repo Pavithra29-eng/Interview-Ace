@@ -63,17 +63,17 @@ export const useInterview = () => {
         return response?.interviewReports
     }
 
-    // 4. Download PDF with proper Blob handling
+    // 4. Download document with updated HTML Blob handling
     const getResumePdf = async (id) => {
         try {
             const response = await generateResumePdf({ interviewReportId: id })
 
-            // Convert raw streaming response structure directly into standard Document Blob layout
-            const blob = new Blob([response], { type: "application/pdf" })
+            // Modified: Formats the response data string as a native HTML web document file
+            const blob = new Blob([response], { type: "text/html" })
             const url = window.URL.createObjectURL(blob)
             const link = document.createElement("a")
             link.href = url
-            link.setAttribute("download", `Interview_Strategy_${id}.pdf`)
+            link.setAttribute("download", `Tailored_Resume_${id}.html`)
             document.body.appendChild(link)
             link.click()
 
@@ -82,6 +82,7 @@ export const useInterview = () => {
             window.URL.revokeObjectURL(url)
         } catch (error) {
             console.error("PDF Download Error:", error)
+            throw error;
         }
     }
 

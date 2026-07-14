@@ -9,7 +9,7 @@ const NAV_ITEMS = [
     { id: 'roadmap', label: 'Road Map', icon: (<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11" /></svg>) },
 ]
 
-// ── Sub-components (Updated with Sample Answer layout) ─────────────────────────
+// ── Sub-components ────────────────────────────────────────────────────────────
 const QuestionCard = ({ item, index }) => {
     const [open, setOpen] = useState(false)
     return (
@@ -31,7 +31,6 @@ const QuestionCard = ({ item, index }) => {
                         <span className='q-card__tag q-card__tag--answer'>Model Answer</span>
                         <p>{item.answer}</p>
                     </div>
-                    {/* ✅ Standardized Sample Candidate Answer rendering box */}
                     {item.sampleAnswer && (
                         <div className='q-card__section' style={{ marginTop: '1.25rem', paddingTop: '1.25rem', borderTop: '1px dashed rgba(255,255,255,0.1)' }}>
                             <span className='q-card__tag' style={{ backgroundColor: '#ff007f', color: '#fff' }}>Sample Answer (Candidate Perspective)</span>
@@ -69,10 +68,15 @@ const Interview = () => {
         if (interviewId) { getReportById(interviewId) }
     }, [interviewId])
 
+    // Pops up a alert message when starting file download execution
     const handleDownload = async () => {
         setIsDownloading(true)
+        alert("Your PrepPulse PDF report generation has started. Please wait a moment for the download to complete!");
         try {
             await getResumePdf(interviewId)
+        } catch (err) {
+            console.error("PDF Download Failure:", err);
+            alert("Failed to download the PDF report. Please try again.");
         } finally {
             setIsDownloading(false)
         }

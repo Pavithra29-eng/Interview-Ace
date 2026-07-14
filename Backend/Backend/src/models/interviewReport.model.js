@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-
 const technicalQuestionSchema = new mongoose.Schema({
     question: {
         type: String,
@@ -92,7 +91,7 @@ const interviewReportSchema = new mongoose.Schema({
     behavioralQuestions: [behavioralQuestionSchema],
     skillGaps: [skillGapSchema],
     preparationPlan: [preparationPlanSchema],
-    // Modified: Allowed type to be ObjectId OR String to accommodate public guest users safely
+    // Allows type to be ObjectId OR String to accommodate public guest users safely
     user: {
         type: mongoose.Schema.Types.Mixed,
         ref: "users"
@@ -105,6 +104,10 @@ const interviewReportSchema = new mongoose.Schema({
     timestamps: true
 })
 
+// Prevent Mongoose model compilation caching bugs on live re-deploys
+if (mongoose.models && mongoose.models.InterviewReport) {
+    delete mongoose.models.InterviewReport;
+}
 
 const interviewReportModel = mongoose.model("InterviewReport", interviewReportSchema);
 

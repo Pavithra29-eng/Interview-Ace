@@ -5,13 +5,27 @@ const session = require("express-session");
 
 const app = express();
 
-// 1. Trust Proxy (Must be first for Render)
+// 1. Trust Proxy (Must be first for Render deployments)
 app.set("trust proxy", 1);
 
-// 2. Production-Ready CORS configuration
+// 2. Strict Custom Headers & CORS Middleware Override
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "https://preppulse-mu.vercel.app");
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+    // Instantly intercept and handle preflight OPTIONS checks
+    if (req.method === "OPTIONS") {
+        return res.sendStatus(200);
+    }
+    next();
+});
+
+// Alternative standard CORS safety package fallbacks
 app.use(cors({
-    origin: "https://preppulse-mu.vercel.app", // Allow your exact frontend domain
-    credentials: true,                          // Allow cookies/headers to pass safely
+    origin: "https://preppulse-mu.vercel.app",
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
@@ -32,7 +46,7 @@ app.use(session({
     }
 }));
 
-// 5. Application Feature Routes (Removed auth routes entirely)
+// 5. Application Feature Routes
 const interviewRouter = require("./routes/interview.routes");
 app.use("/api/interview", interviewRouter);
 

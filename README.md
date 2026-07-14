@@ -1,4 +1,4 @@
-# PrepPulse 🚀
+# PrepPulse 
 
 PrepPulse is a smart, free web application built to help job seekers prepare for interviews and create tailored resumes in seconds. 
 

@@ -28,7 +28,7 @@ async function generateInterViewReportController(req, res) {
             jobDescription
         });
 
-        // Modified: Fallback to "guest" if req.user doesn't exist
+        // Fallback to "guest" if req.user doesn't exist
         const interviewReport = await interviewReportModel.create({
             user: req.user?.id || "guest",
             resume: resumeText,
@@ -53,7 +53,7 @@ async function generateInterViewReportController(req, res) {
 async function getInterviewReportByIdController(req, res) {
     try {
         const { interviewId } = req.params;
-        // Modified: Removed the user: req.user.id constraint so anyone can fetch it by ID
+        // Removed the user: req.user.id constraint so anyone can fetch it by ID
         const interviewReport = await interviewReportModel.findOne({ _id: interviewId });
 
         if (!interviewReport) {
@@ -77,7 +77,7 @@ async function getInterviewReportByIdController(req, res) {
  */
 async function getAllInterviewReportsController(req, res) {
     try {
-        // Modified: Removed { user: req.user.id } filter so everyone can see the public reports list
+        // Removed { user: req.user.id } filter so everyone can see the public reports list
         const interviewReports = await interviewReportModel.find({})
             .sort({ createdAt: -1 })
             .select("-resume -selfDescription -jobDescription -__v -technicalQuestions -behavioralQuestions -skillGaps -preparationPlan");
@@ -93,7 +93,7 @@ async function getAllInterviewReportsController(req, res) {
 }
 
 /**
- * @description Controller to generate resume PDF based on user information.
+ * @description Controller to generate resume document based on user information.
  */
 async function generateResumePdfController(req, res) {
     try {
@@ -107,17 +107,20 @@ async function generateResumePdfController(req, res) {
         }
 
         const { resume, jobDescription, selfDescription } = interviewReport;
-        const pdfBuffer = await generateResumePdf({ resume, jobDescription, selfDescription });
 
+        // Obtains the built, premium styled HTML string code directly from the service layer
+        const htmlContent = await generateResumePdf({ resume, jobDescription, selfDescription });
+
+        // Outputs headers to deliver a clean, fast .html web document file attachment
         res.set({
-            "Content-Type": "application/pdf",
-            "Content-Disposition": `attachment; filename=resume_${interviewReportId}.pdf`,
-            "Content-Length": pdfBuffer.length
+            "Content-Type": "text/html",
+            "Content-Disposition": `attachment; filename=tailored_resume_${interviewReportId}.html`,
+            "Content-Length": Buffer.byteLength(htmlContent)
         });
 
-        res.send(pdfBuffer);
+        res.send(htmlContent);
     } catch (error) {
-        console.error("PDF Controller Error:", error);
+        console.error("Document Controller Error:", error);
         res.status(500).json({ message: "Failed to compile document binary." });
     }
 }

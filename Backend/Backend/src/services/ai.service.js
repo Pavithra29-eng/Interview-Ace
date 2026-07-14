@@ -1,7 +1,6 @@
 const { GoogleGenAI } = require("@google/genai")
 const { z } = require("zod")
 const { zodToJsonSchema } = require("zod-to-json-schema")
-const puppeteer = require("puppeteer")
 
 // Create instance using your specific environment key
 const ai = new GoogleGenAI({
@@ -46,7 +45,6 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
                     2. Provide direct answers. Do not include meta-commentary, introductory filler text, or external meta-suggestions.
                     3. For both technical and behavioral fields, ensure the "sampleAnswer" is written dynamically in the first person ("I built...", "In my past team...") as a perfect response spoken directly by a candidate during an interview.`
 
-    // Pull the schema structure configuration
     const parsedSchema = zodToJsonSchema(interviewReportSchema);
 
     const response = await ai.models.generateContent({
@@ -61,43 +59,21 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
     return JSON.parse(response.text)
 }
 
-async function generatePdfFromHtml(htmlContent) {
-    // Modified: Appended --no-sandbox flags so Chromium compiles successfully inside server containers
-    const browser = await puppeteer.launch({
-        headless: "new",
-        args: ["--no-sandbox", "--disable-setuid-sandbox"]
-    })
-    const page = await browser.newPage();
-    await page.setContent(htmlContent, { waitUntil: "networkidle0" })
-
-    const pdfBuffer = await page.pdf({
-        format: "A4",
-        margin: {
-            top: "20mm",
-            bottom: "20mm",
-            left: "15mm",
-            right: "15mm"
-        }
-    })
-
-    await browser.close()
-    return pdfBuffer
-}
-
+// Modified: Simply returns the AI generated professional HTML document layout directly
 async function generateResumePdf({ resume, selfDescription, jobDescription }) {
     const resumePdfSchema = z.object({
-        html: z.string().describe("The HTML content of the resume which can be converted to PDF using puppeteer")
+        html: z.string().describe("The complete HTML content of the beautifully styled professional resume document")
     })
 
     const parsedResumeSchema = zodToJsonSchema(resumePdfSchema);
 
-    const prompt = `Generate a professional resume for a candidate with the following details:
+    const prompt = `Generate a beautiful, highly professional resume for a candidate with the following details:
                     Resume: ${resume}
                     Self Description: ${selfDescription}
                     Job Description: ${jobDescription}
 
-                    The response should be a JSON object with a single field "html" containing clean HTML layout rules. 
-                    The resume must be tailored for the given job description, human-sounding, professional, ATS-friendly, and formatted to translate perfectly into a clean 1-2 page A4 PDF document.`
+                    The response should be a JSON object with a single field "html" containing a complete, fully inline-styled HTML page structure.
+                    Include elegant embedded CSS styling (clean fonts, professional margins, clear sections) so it looks like a premium resume when opened or printed.`
 
     const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
@@ -109,8 +85,7 @@ async function generateResumePdf({ resume, selfDescription, jobDescription }) {
     })
 
     const jsonContent = JSON.parse(response.text)
-    const pdfBuffer = await generatePdfFromHtml(jsonContent.html)
-    return pdfBuffer
+    return jsonContent.html; // Return the raw HTML string
 }
 
 module.exports = { generateInterviewReport, generateResumePdf }

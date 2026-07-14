@@ -1,12 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react'
 import "../style/home.scss"
 import { useInterview } from '../hooks/useInterview.js'
-import { useAuth } from '../../auth/hooks/useAuth.js'
 import { useNavigate } from 'react-router'
 
 const Home = () => {
     const { generating, generateReport, error } = useInterview()
-    const { handleLogout } = useAuth()
     const [jobDescription, setJobDescription] = useState("")
     const [selfDescription, setSelfDescription] = useState("")
     const [fileName, setFileName] = useState("")
@@ -67,27 +65,17 @@ const Home = () => {
         try {
             const resumeFile = resumeInputRef.current?.files[0]
 
-            // Call the generate function from your hook
             const data = await generateReport({
                 jobDescription,
                 selfDescription,
                 resumeFile
             })
 
-            // Only navigate if we actually got a response with an ID
             if (data && data._id) {
                 navigate(`/interview/${data._id}`)
             }
         } catch (err) {
             console.error("Error generating report:", err)
-        }
-    }
-
-    const handleLogoutClick = async () => {
-        try {
-            await handleLogout()
-        } finally {
-            navigate("/login", { replace: true })
         }
     }
 
@@ -113,7 +101,8 @@ const Home = () => {
     return (
         <div className='home-page'>
             <header className='page-header'>
-                <h1>Create Your Custom <span className='highlight'>Interview Plan</span></h1>
+                {/* Modified: Changed header title text to feature PrepPulse branding */}
+                <h1>Welcome to <span className='highlight'>PrepPulse</span></h1>
                 <p>Let our AI analyze the job requirements and your unique profile to build a winning strategy.</p>
             </header>
 
@@ -176,16 +165,7 @@ const Home = () => {
                     <span className='footer-info'>AI-Powered Strategy &bull; Approx 30s</span>
 
                     <div style={{ display: 'flex', gap: '1rem' }}>
-                        {/* Logout Button */}
-                        <button
-                            onClick={handleLogoutClick}
-                            className='generate-btn'
-                            style={{ background: '#333', border: '1px solid #444' }}
-                        >
-                            Logout
-                        </button>
-
-                        {/* Generate Button */}
+                        {/* Modified: Removed Logout button wrapper and left only Generate button */}
                         <button onClick={handleGenerateReport} className='generate-btn'>
                             Generate My Interview Strategy
                         </button>

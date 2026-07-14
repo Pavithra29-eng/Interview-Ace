@@ -28,8 +28,9 @@ async function generateInterViewReportController(req, res) {
             jobDescription
         });
 
+        // Modified: Fallback to "guest" if req.user doesn't exist
         const interviewReport = await interviewReportModel.create({
-            user: req.user.id,
+            user: req.user?.id || "guest",
             resume: resumeText,
             selfDescription,
             jobDescription,
@@ -52,7 +53,8 @@ async function generateInterViewReportController(req, res) {
 async function getInterviewReportByIdController(req, res) {
     try {
         const { interviewId } = req.params;
-        const interviewReport = await interviewReportModel.findOne({ _id: interviewId, user: req.user.id });
+        // Modified: Removed the user: req.user.id constraint so anyone can fetch it by ID
+        const interviewReport = await interviewReportModel.findOne({ _id: interviewId });
 
         if (!interviewReport) {
             return res.status(404).json({
@@ -75,7 +77,8 @@ async function getInterviewReportByIdController(req, res) {
  */
 async function getAllInterviewReportsController(req, res) {
     try {
-        const interviewReports = await interviewReportModel.find({ user: req.user.id })
+        // Modified: Removed { user: req.user.id } filter so everyone can see the public reports list
+        const interviewReports = await interviewReportModel.find({})
             .sort({ createdAt: -1 })
             .select("-resume -selfDescription -jobDescription -__v -technicalQuestions -behavioralQuestions -skillGaps -preparationPlan");
 

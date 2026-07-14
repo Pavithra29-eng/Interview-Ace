@@ -27,7 +27,8 @@ app.use(cookieParser());
 
 // 4. Session & Passport Middleware Stack (Moved here for correct ordering!)
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'interview_ace_secret_key',
+    // Modified: Changed old 'interview_ace_secret_key' to 'preppulse_secret_key'
+    secret: process.env.SESSION_SECRET || 'preppulse_secret_key',
     resave: false,
     saveUninitialized: false,
     cookie: {

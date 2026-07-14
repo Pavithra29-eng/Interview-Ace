@@ -32,7 +32,7 @@ app.use(session({
     }
 }));
 
-// 5. Intercept Dead Auth Routes Safely to Avoid 404 Header Wipes
+// 5. Intercept Dead Frontend Auth Requests to avoid 404 header drops
 app.get("/api/auth/get-me", (req, res) => {
     res.header("Access-Control-Allow-Origin", "https://preppulse-mu.vercel.app");
     res.header("Access-Control-Allow-Credentials", "true");

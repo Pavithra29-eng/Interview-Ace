@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
+    // Dynamically pulls the base URL from Vercel's environment variables
     baseURL: import.meta.env.VITE_API_URL,
     withCredentials: true,
 });

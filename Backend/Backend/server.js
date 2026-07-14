@@ -2,7 +2,7 @@ require("dotenv").config();
 const app = require("./src/app");
 const connectToDB = require("./src/config/database");
 
-// 1. Force Entry-Level CORS Headers before any Database or Route triggers
+// 1. Enforce strict CORS handling at the absolute network entry point
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "https://preppulse-mu.vercel.app");
     res.header("Access-Control-Allow-Credentials", "true");

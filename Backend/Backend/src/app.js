@@ -16,11 +16,8 @@ const corsOptions = {
     allowedHeaders: ["Content-Type", "Authorization"]
 };
 
-// Apply CORS globally
+// Apply CORS globally (this automatically catches preflight requests)
 app.use(cors(corsOptions));
-
-// Explicitly ensure all OPTIONS preflight requests return a clean 200 OK immediately
-app.options("*", cors(corsOptions));
 
 // 3. Body Parsers & Cookie Parser
 app.use(express.json());
